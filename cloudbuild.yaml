@@ -1,6 +1,7 @@
 steps:
 
-# 🔹 Build Images
+# 🔹 1. Build Images with UNIQUE TAG ($SHORT_SHA)
+
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/user-service:$SHORT_SHA', './microservices/user-service']
 
@@ -17,7 +18,23 @@ steps:
   args: ['build', '-t', 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/ui-service:$SHORT_SHA', './microservices/ui-service']
 
 
-# 🔹 Deploy Step (must be inside steps)
+# 🔹 2. Push Images (handled automatically via images section below)
+
+
+# 🔹 3. Connect to GKE Cluster (IMPORTANT FIX)
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - container
+    - clusters
+    - get-credentials
+    - sahitya-cluster
+    - --zone
+    - europe-north1-a
+
+
+# 🔹 4. Deploy Updated Images to GKE
+
 - name: 'gcr.io/cloud-builders/kubectl'
   entrypoint: 'bash'
   args:
@@ -28,12 +45,10 @@ steps:
       kubectl set image deployment/cart-deployment cart=asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/cart-service:$SHORT_SHA
       kubectl set image deployment/payment-deployment payment=asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/payment-service:$SHORT_SHA
       kubectl set image deployment/ui-deployment ui=asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/ui-service:$SHORT_SHA
-  env:
-    - 'CLOUDSDK_COMPUTE_ZONE=europe-north1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=sahitya-cluster'
 
 
-# 🔹 Push Images (TOP LEVEL ONLY)
+# 🔹 5. Push Images to Artifact Registry
+
 images:
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/user-service:$SHORT_SHA'
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/product-service:$SHORT_SHA'
@@ -42,6 +57,7 @@ images:
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/ui-service:$SHORT_SHA'
 
 
-# 🔹 Options (correct)
+# 🔹 6. Logging (optional but clean)
+
 options:
   logging: CLOUD_LOGGING_ONLY
