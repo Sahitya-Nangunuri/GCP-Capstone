@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user
-        image: us-west1-docker.pkg.dev/citric-kit-489316-g6/charan-ar/user-service:latest
+        image: asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/user-service:latest
         ports:
         - containerPort: 5001
 ---

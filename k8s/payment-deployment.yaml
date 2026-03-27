@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: payment
-        image: us-west1-docker.pkg.dev/citric-kit-489316-g6/charan-ar/payment-service:latest
+        image: asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/payment-service:latest
         ports:
         - containerPort: 5004
 ---
