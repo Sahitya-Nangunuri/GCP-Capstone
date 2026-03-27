@@ -18,11 +18,6 @@ spec:
         ports:
         - containerPort: 5000
 
-        resources:
-            requests:
-              cpu: "100m"
-            limits:
-              cpu: "300m"
 
         env:
         - name: USER_SERVICE_URL
@@ -46,24 +41,3 @@ spec:
       targetPort: 5000
   type: LoadBalancer
 
-
---- 
-# 🔹 HPA
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: ui-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: ui-deployment
-  minReplicas: 1
-  maxReplicas: 2
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 20
