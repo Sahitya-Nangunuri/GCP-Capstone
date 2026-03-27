@@ -36,8 +36,8 @@ steps:
     - |
       sed -i "s|user-service:.*|user-service:$SHORT_SHA|g" k8s/user-deployement.yaml
       sed -i "s|product-service:.*|product-service:$SHORT_SHA|g" k8s/product-deployement.yaml
-      sed -i "s|cart-service:.*|cart-service:$SHORT_SHA|g" k8s/cart-deployement.yaml
-      sed -i "s|payment-service:.*|payment-service:$SHORT_SHA|g" k8s/payment-deployement.yaml
+      sed -i "s|cart-service:.*|cart-service:$SHORT_SHA|g" k8s/cart-deployment.yaml
+      sed -i "s|payment-service:.*|payment-service:$SHORT_SHA|g" k8s/payment-deployment.yaml
       sed -i "s|ui-service:.*|ui-service:$SHORT_SHA|g" k8s/ui-deployement.yaml
 
 
