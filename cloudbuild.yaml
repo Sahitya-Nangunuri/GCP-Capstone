@@ -1,6 +1,6 @@
 steps:
 
-# 🔹 1. Build Images
+# 🔹 1. Build Images with UNIQUE TAG
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/user-service:$SHORT_SHA', './microservices/user-service']
 
@@ -17,18 +17,7 @@ steps:
   args: ['build', '-t', 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/ui-service:$SHORT_SHA', './microservices/ui-service']
 
 
-# 🔹 2. Connect to GKE
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - container
-    - clusters
-    - get-credentials
-    - sahitya-cluster
-    - --zone
-    - europe-north1-a
-
-
-# 🔹 3. Replace image tags in YAML (IMPORTANT STEP)
+# 🔹 2. Replace image tags inside k8s YAML (GitOps style)
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
@@ -41,15 +30,15 @@ steps:
       sed -i "s|ui-service:.*|ui-service:$SHORT_SHA|g" k8s/ui-deployement.yaml
 
 
-# 🔹 4. Deploy using YAML (THIS FIXES YOUR ERROR)
+# 🔹 3. Deploy to GKE using kubectl (AUTO AUTH via env)
 - name: 'gcr.io/cloud-builders/kubectl'
-  args:
-    - apply
-    - -f
-    - k8s/
+  args: ['apply', '-f', 'k8s/']
+  env:
+    - 'CLOUDSDK_COMPUTE_ZONE=europe-north1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=sahitya-cluster'
 
 
-# 🔹 5. Push images
+# 🔹 4. Push images to Artifact Registry
 images:
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/user-service:$SHORT_SHA'
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/product-service:$SHORT_SHA'
@@ -58,5 +47,6 @@ images:
 - 'asia-south1-docker.pkg.dev/citric-kit-489316-g6/sahityaartifactrepo/ui-service:$SHORT_SHA'
 
 
+# 🔹 5. Logging
 options:
   logging: CLOUD_LOGGING_ONLY
